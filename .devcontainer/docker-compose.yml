@@ -6,8 +6,6 @@ services:
       args:
         # Elixir Version: 1.9, 1.10, 1.10.4, ...
         VARIANT: "1.17.3-erlang-27.2-ubuntu-focal-20241011"
-        # Node Version: 12, 14, ...
-        NODE_VERSION: "20"
         # Livebook Version
         LIVEBOOK_VERSION: "v0.14.5"
     environment:
