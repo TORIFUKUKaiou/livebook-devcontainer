@@ -1,6 +1,6 @@
-# Update the VARIANT arg in docker-compose.yml to pick an Elixir version: 1.9, 1.10, 1.10.4
-ARG VARIANT="1.17.3-erlang-27.2-ubuntu-focal-20241011"
-FROM hexpm/elixir:${VARIANT}
+# Update the VARIANT arg in docker-compose.yml to pick a Ubuntu version
+ARG VARIANT="jammy-20240911.1"
+FROM ubuntu:${VARIANT}
 
 # This Dockerfile adds a non-root user with sudo access. Update the “remoteUser” property in
 # devcontainer.json to use it. More info: https://aka.ms/vscode-remote/containers/non-root-user.
@@ -29,7 +29,18 @@ RUN apt-get update \
   && apt-get clean -y \
   && rm -rf /var/lib/apt/lists/* /tmp/common-setup.sh
 
-RUN su ${USERNAME} -c "mix local.hex --force \
+RUN su ${USERNAME} -c "mkdir -p /home/vscode/.elixir-install"
+RUN su ${USERNAME} -c "curl -fsSo '/home/vscode/.elixir-install/install.sh' 'https://elixir-lang.org/install.sh'"
+
+ARG ELIXIR_VERSION='1.17.3'
+ARG ELIXIR_OTP_RELEASE='27'
+ARG OTP_VERSION='27.2'
+
+RUN su ${USERNAME} -c "sh /home/vscode/.elixir-install/install.sh elixir@${ELIXIR_VERSION} otp@${OTP_VERSION}"
+RUN su ${USERNAME} -c "echo 'export PATH=/home/vscode/.elixir-install/installs/otp/${OTP_VERSION}/bin:/home/vscode/.elixir-install/installs/elixir/${ELIXIR_VERSION}-otp-${ELIXIR_OTP_RELEASE}/bin:$PATH' >> /home/vscode/.profile"
+
+RUN su ${USERNAME} -c "source /home/vscode/.profile \
+  && mix local.hex --force \
   && mix local.rebar --force"
 
 # [Optional] Uncomment this section to install additional OS packages.
@@ -47,5 +58,5 @@ WORKDIR /home/vscode
 RUN su ${USERNAME} -c "git clone https://github.com/livebook-dev/livebook.git \
   && cd livebook \
   && git checkout -b tags/${LIVEBOOK_VERSION} ${LIVEBOOK_VERSION} \
+  && source /home/vscode/.profile \
   && mix deps.get --only prod"
-
