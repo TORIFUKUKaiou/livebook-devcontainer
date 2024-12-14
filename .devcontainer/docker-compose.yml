@@ -1,8 +1,19 @@
 services:
   livebook:
-    image: ghcr.io/livebook-dev/livebook:0.14.5
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Elixir Version: 1.9, 1.10, 1.10.4, ...
+        VARIANT: "1.17.3-erlang-27.2-ubuntu-focal-20241011"
+        # Node Version: 12, 14, ...
+        NODE_VERSION: "20"
+        # Livebook Version
+        LIVEBOOK_VERSION: "v0.14.5"
     environment:
-      LIVEBOOK_PASSWORD: securesecret
+      - MIX_ENV=prod
+      - ELIXIR_ERL_OPTIONS=-epmd_module Elixir.Livebook.EPMD
     ports: 
       - "8080:8080"
       - "8081:8081"
+    command: sleep infinity
