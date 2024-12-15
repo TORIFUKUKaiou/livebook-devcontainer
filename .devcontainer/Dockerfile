@@ -1,5 +1,5 @@
 # Update the VARIANT arg in docker-compose.yml to pick a Ubuntu version
-ARG VARIANT="ubuntu-22.04"
+ARG VARIANT="ubuntu-24.04"
 FROM mcr.microsoft.com/devcontainers/base:${VARIANT}
 
 # This Dockerfile adds a non-root user with sudo access. Update the “remoteUser” property in
