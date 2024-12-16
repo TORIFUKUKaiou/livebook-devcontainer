@@ -3,6 +3,7 @@
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "livebook",
 	"workspaceFolder": "/home/vscode",
+	"postAttachCommand": "cd /home/vscode/livebook && mix phx.server",
 
 	// Configure tool-specific properties.
 	"customizations": {

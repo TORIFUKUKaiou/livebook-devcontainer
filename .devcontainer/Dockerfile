@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/devcontainers/base:${VARIANT}
 ARG USERNAME=vscode
 
 # Install needed packages and setup non-root user. Use a separate RUN statement to add your own dependencies.
-RUN apt-get update && apt-get install -y xz-utils build-essential inotify-tools git curl unzip
+RUN apt-get update && apt-get install -y xz-utils build-essential inotify-tools git curl unzip sed
 
 RUN su ${USERNAME} -c "mkdir -p /home/vscode/.elixir-install"
 RUN su ${USERNAME} -c "curl -fsSo '/home/vscode/.elixir-install/install.sh' 'https://elixir-lang.org/install.sh'"
@@ -38,6 +38,7 @@ WORKDIR /home/vscode
 RUN su ${USERNAME} -c "git clone https://github.com/livebook-dev/livebook.git \
   && cd livebook \
   && git checkout -b tags/${LIVEBOOK_VERSION} ${LIVEBOOK_VERSION} \
+  && sed -i 's/{127, 0, 0, 1}/{0, 0, 0, 0}/' /home/vscode/livebook/config/prod.exs \
   && source /home/vscode/.profile \
   && mix deps.get --only prod \
   && MIX_ENV=prod mix compile"
